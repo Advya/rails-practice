@@ -1,0 +1,41 @@
+<h1>Ticket Details</h1>
+
+<p>Id: <%= @ticket.id %></p>
+<p>Request Number: <%= @ticket.request_number %></p>
+<p>Sequence Number: <%= @ticket.sequence_number %></p>
+
+<p>Request type: <%= @ticket.request_type %></p>
+<p>Reuest action Number: <%= @ticket.request_action %></p>
+<p>Date times: <%= @ticket.date_times['request_taken_date_time'] %></p>
+<p>Primary service area code: <%= @ticket.service_area.dig('primary_service_area_code', 'sa_code') %></p>
+<p>Additional service area codes: <%= @ticket.service_area.dig('additional_service_area_codes', 'sa_code') %></p>
+<p>Digisite info: <%= @ticket.excavation_info.dig('digsite_info', 'well_known_text') %></p>
+<p>Created at: <%= @ticket.created_at %></p>
+<p>Updated at: <%= @ticket.updated_at %></p>
+
+<h2>Excavator Details</h2>
+<p>Id: <%= @ticket.excavator.id %></p>
+<p>Ticket Id: <%= @ticket.excavator.ticket.id %></p>
+<p>Company Name: <%= @ticket.excavator.company_name %></p>
+<p>Address: <%= @ticket.excavator.address %></p>
+<p>Crew On Site: <%= @ticket.excavator.crew_on_site %></p>
+<p>Created at <%= @ticket.excavator.created_at %></p>
+<p>Updated at <%= @ticket.excavator.updated_at %></p>
+
+<div id="map" style="height: 400px;"></div>
+
+<script>
+    const polygonString = "${<%= @ticket.excavation_info.dig('digsite_info', 'well_known_text') %>}"
+    const regex = /(-?\d+\.\d+) (-?\d+\.\d+)/g;
+    const matches = [...polygonString.matchAll(regex)];
+    const coordinates = matches.map(match => [parseFloat(match[1]), parseFloat(match[2])]);
+
+    var map = L.map('map').setView([-81.13390268058475, 32.07206917625161], 11);
+    var polygon = L.polygon(coordinates).addTo(map)
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+</script>
+
